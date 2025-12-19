@@ -1,0 +1,76 @@
+╔════════════════════════════════════════════════════════════════╗
+║         RAILWAY.APP DEPLOYMENT - FINAL CHECKLIST              ║
+╚════════════════════════════════════════════════════════════════╝
+
+PROJECT PREPARATION STATUS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Dockerfile        → Railway-optimized with volume setup
+✅ .railway.toml     → Configured with /app/data mount
+✅ .dockerignore     → Optimized for build performance
+✅ .env.example      → Complete configuration template
+✅ server/index.ts   → 0.0.0.0 binding + health endpoint
+✅ Health endpoint   → /api/health for Railway monitoring
+✅ Database paths    → Using absolute /app/data paths
+✅ Port handling     → Dynamic PORT env var support
+
+BEFORE DEPLOYING TO RAILWAY:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. [ ] Create amourscanc.com folder
+2. [ ] Push to GitHub (don't initialize with README)
+3. [ ] Have your admin email ready
+4. [ ] Generate a secure password (12+ chars)
+
+RAILWAY DASHBOARD STEPS (In Order):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. [ ] New Project → Deploy from GitHub repo
+2. [ ] Select amourscanc.com
+3. [ ] Wait for build to complete
+4. [ ] Go to Service Settings → Volumes
+5. [ ] Create New Volume:
+      - Mount Path: /app/data
+      - Size: 2GB
+6. [ ] Go to Variables tab, add:
+      - NODE_ENV=production
+      - DATABASE_PATH=/app/data/database.db
+      - SESSIONS_PATH=/app/data/sessions.db
+      - ADMIN_EMAIL=your-email@domain.com
+      - ADMIN_PASSWORD=secure-password
+      - ADMIN_USERNAME=admin
+7. [ ] Wait for auto-redeployment
+8. [ ] Check Deployments status → Success
+
+VERIFICATION (After Deployment):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. [ ] Visit https://your-railway-url/api/health
+      Expected: {"status":"ok","timestamp":"..."}
+2. [ ] Visit https://your-railway-url/login
+      Expected: Login page loads
+3. [ ] Login with your ADMIN_EMAIL and ADMIN_PASSWORD
+      Expected: Redirected to dashboard
+4. [ ] Try signup with a test account
+      Expected: New user created, can login
+5. [ ] Check Railway logs for "Server running"
+      Expected: No ERROR or ENOENT messages
+6. [ ] Redeploy (git push or click redeploy)
+      Expected: Previous data persists after redeployment
+
+CRITICAL MUST-HAVES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️  Volume mount configured (without this, data is lost)
+⚠️  Environment variables all set (incomplete = deploy fails)
+⚠️  Health endpoint working (/api/health returns 200)
+⚠️  Admin credentials changed from defaults
+⚠️  No .db files committed to GitHub
+
+TROUBLESHOOTING QUICK FIXES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Build Fails:          → Check logs, verify Dockerfile syntax
+Data Disappears:      → Volume not mounted, see steps above
+Login Fails:          → ADMIN_CREDENTIALS wrong or not set
+Permission Denied:    → Volume ownership issue (recheck mount)
+Out of Space:         → Increase volume size to 5GB
+
+FULL DOCUMENTATION:
+See RAILWAY_DEPLOYMENT_GUIDE.md for complete step-by-step instructions
+
+═══════════════════════════════════════════════════════════════════
