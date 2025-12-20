@@ -1,8 +1,14 @@
-FROM node:20-alpine
+COPY EVERYTHING BELOW AND PASTE INTO YOUR GITHUB DOCKERFILE
+====================================================================
+
+FROM node:20
 
 WORKDIR /app
 
-RUN apk add --no-cache sqlite python3 make g++ pkg-config pixman-dev cairo-dev jpeg-dev
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    sqlite3 python3 make g++ pkg-config \
+    libpixman-1-dev libcairo2-dev libjpeg-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY package*.json ./
 
@@ -14,7 +20,7 @@ RUN mkdir -p /app/data && chmod 755 /app/data
 
 RUN npm run build
 
-RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
+RUN addgroup --gid 1001 nodejs && adduser --disabled-password --gecos '' --uid 1001 nodejs
 
 RUN chown -R nodejs:nodejs /app/data
 
@@ -30,3 +36,6 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD node -e "require('http').get('http://localhost:${PORT:-5000}/api/health', (r) => r.statusCode === 200 ? process.exit(0) : process.exit(1))" || exit 1
 
 CMD ["npm", "start"]
+
+====================================================================
+THAT'S IT - COPY EVERYTHING ABOVE AND PASTE INTO YOUR GITHUB DOCKERFILE
