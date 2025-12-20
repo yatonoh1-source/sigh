@@ -1,17 +1,17 @@
 # Dockerfile optimized for Railway.app deployment with SQLite persistence
-FROM node:18-alpine
+FROM node:20-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Install SQLite dependencies and build tools
-RUN apk add --no-cache sqlite python3 make g++
+# Install SQLite dependencies and build tools for canvas
+RUN apk add --no-cache sqlite python3 make g++ pkg-config pixman-dev cairo-dev
 
 # Copy package files first for better caching
 COPY package*.json ./
 
 # Install ALL dependencies (including dev dependencies for build)
-RUN npm ci
+RUN npm install
 
 # Copy entire project
 COPY . .
